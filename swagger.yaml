@@ -1,0 +1,41 @@
+# swagger.yaml
+openapi: 3.0.0
+info:
+  title: Assignment Solver API
+  version: 1.0.0
+  description: API for educational problem-solving application
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development server
+paths:
+  /problems:
+    get:
+      summary: Get list of problems
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: |
+                {
+                  "problems": [
+                    {
+                      "id": "1",
+                      "title": "Algebra Problem",
+                      "difficulty": "medium"
+                    }
+                  ]
+                }
+  /problems/{id}:
+    get:
+      summary: Get a specific problem
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Problem ID
+      responses:
+        '200':
+          description: Successful response
