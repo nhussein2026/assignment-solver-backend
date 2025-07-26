@@ -2,10 +2,9 @@
   "name": "assignment-solver-backend",
   "packageManager": "yarn@4.6.0",
   "scripts": {
-    "build": "tsc && mkdir -p public && echo '<!DOCTYPE html><html><head><title>Loading...</title><meta http-equiv=\"refresh\" content=\"0; url=/api/landing\" /></head><body><p>Redirecting to landing page...</p></body></html>' > public/index.html",
+    "build": "tsc && mkdir -p public",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts",
-    "vercel-build": "yarn build && echo '{\"version\":3}' > dist/.vercel/output/config.json"
+    "dev": "nodemon --exec ts-node src/server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
