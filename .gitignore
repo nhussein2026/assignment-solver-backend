@@ -11,3 +11,4 @@
 .env
 #!.yarn/cache
 .pnp.*
+.vercel
