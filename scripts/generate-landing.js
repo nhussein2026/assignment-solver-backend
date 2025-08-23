@@ -23,6 +23,12 @@ const landingHTML = `
     <div class="text-center">
       <h1 class="text-4xl font-bold text-gray-800 mb-4">Assignment Solver API</h1>
       <p class="text-xl text-gray-600 mb-8">Backend service is running successfully</p>
+
+       <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">API Base URL</h2>
+        <code class="bg-gray-100 p-2 rounded text-lg font-mono">${process.env.API_BASE_URL || '/api'}</code>
+      </div>
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         <a href="/api-docs" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
           <div class="text-indigo-600 mb-3"><i class="fas fa-book-open fa-2x"></i></div>

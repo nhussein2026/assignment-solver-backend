@@ -5,6 +5,10 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
+
+import authRoutes from "./routes/authRoutes";
+// import userRoutes from "./routes/userRoutes";
+
 dotenv.config();
 
 const app = express();
@@ -13,12 +17,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use("/api/auth", authRoutes);   // → /api/auth/register, /api/auth/login
+// app.use("/api/users", userRoutes); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)
+
+
 // Swagger setup
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Landing page route
-app.get('/', (req: Request, res: Response) => {
+app.get('/api', (req: Request, res: Response) => {
   const html = `
   <!DOCTYPE html>
   <html lang="en">
