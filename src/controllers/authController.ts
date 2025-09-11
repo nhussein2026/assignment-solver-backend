@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import mongoose from 'mongoose';
 import User from "../models/User";
-import { RegisterDTO } from "../types/User.types";
-import { hashPassword } from "../utils/password";
+import { RegisterDTO, LoginDTO, JWTPayload, IUser  } from "../types/User.types";
+import { comparePassword, hashPassword } from "../utils/password";
+import jwt from 'jsonwebtoken';
 
 // simple slugify for username
 const slugify = (s: string) =>
@@ -45,7 +47,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       // quick server-side validation (same rule as your schema)
     const qatRegex = /^(\+974\s?)?[3-7]\d{3}\s?\d{4}$/;
     if (!qatRegex.test(phone)) {
-      res.status(400).json({ msg: "Invalid phone format. Expected Qatari number like +97460001234 or 60001234" });
+      res.status(400).json({ msg: "Invalid phone format. Expected Qatari number like +974 6000 1234 or 6000 1234" });
       return;
     }
 
@@ -97,4 +99,108 @@ console.log("User created:", user)
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {}
+
+export const login = async (req: Request, res: Response): Promise<void> => {
+  console.log("Login endpoint hit");
+  console.log("Request body:", req.body);
+  
+  try {
+    const { email, password } = req.body as LoginDTO;
+
+    // Basic presence checks
+    if (!email || !password) {
+      res.status(400).json({ msg: "Email and password are required" });
+      return;
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(401).json({ msg: "Invalid credentials" });
+      return;
+    }
+
+    console.log("User found:", user.email);
+
+    // Compare password
+    const isPasswordValid = await comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      console.log("Password validation failed");
+      res.status(401).json({ msg: "Invalid credentials" });
+      return;
+    }
+
+    console.log("Password validated successfully");
+
+     // Optional: Check if user is verified (based on your IUser interface)
+    // Uncomment if you want to require email verification before login
+    // if (!user.isEmailVerified) {
+    //   res.status(403).json({ msg: "Please verify your email before logging in" });
+    //   return;
+    // }
+
+
+
+    // Create JWT token
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      console.error("JWT_SECRET is not defined");
+      res.status(500).json({ msg: "Server configuration error" });
+      return;
+    }
+
+      const payload: JWTPayload = {
+      userId: (user._id as mongoose.Types.ObjectId).toString(),
+      email: user.email,
+      username: user.username,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d', // default 7 days
+    } as jwt.SignOptions);
+    console.log("JWT token generated for user:", user.email);
+
+    // Update last login timestamp (optional)
+    await User.findByIdAndUpdate(user._id, {
+      lastLogin: new Date(),
+    });
+
+    // Return success response (password excluded thanks to toJSON transform)
+    res.status(200).json({
+      msg: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+         role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+        // include other safe fields as needed
+      },
+    });
+
+  } catch (err: any) {
+    console.error("Error in login controller:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// Optional: Logout function (for token blacklisting if needed)
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  console.log("Logout endpoint hit");
+  
+  try {
+    // If you implement token blacklisting, add logic here
+    // For now, just return success (client should remove token)
+    
+    res.status(200).json({
+      msg: "Logout successful",
+    });
+  } catch (err: any) {
+    console.error("Error in logout controller:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};

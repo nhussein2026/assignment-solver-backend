@@ -51,7 +51,7 @@ const userSchema: Schema<IUser> = new Schema(
     ],
     role: {
       type: String,
-      enum: ["student", "admin"],
+      enum: ["student", "admin", "user"],
       default: "student",
     },
     isEmailVerified: {

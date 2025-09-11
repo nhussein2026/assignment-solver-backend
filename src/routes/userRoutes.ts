@@ -1,15 +1,24 @@
-// import express from "express";
-// import {
-//   getMe,
-//   updateProfile,
-//   getReferrals,
-// } from "../controllers/userController.js";
-// import authMiddleware from "../middlewares/authMiddleware.js";
+import { Router } from "express";
+import {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getMyProfile,
+} from "../controllers/userController";
+import authenticated from "../middleware/authMiddleware";
 
-// const router = express.Router();
+const router = Router();
 
-// router.get("/me", authMiddleware, getMe);
-// router.put("/me", authMiddleware, updateProfile);
-// router.get("/referrals", authMiddleware, getReferrals);
+router.post("/", createUser);           // POST /api/users
+router.get("/", getAllUsers);           // GET /api/users
+// router.get("/:id", getUserById);        // GET /api/users/:id
+router.put("/:id", updateUser);         // PUT /api/users/:id
+router.delete("/:id", deleteUser);      // DELETE /api/users/:id
 
-// export default router;
+
+// profile route
+router.get("/me", authenticated,  getMyProfile); // GET /api/users/me
+
+export default router;

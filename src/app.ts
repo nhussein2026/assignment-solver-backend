@@ -7,7 +7,8 @@ import YAML from 'yamljs';
 
 
 import authRoutes from "./routes/authRoutes";
-// import userRoutes from "./routes/userRoutes";
+import userRoutes from "./routes/userRoutes";
+import coursesRoutes from "./routes/courseRoutes";
 
 dotenv.config();
 
@@ -19,7 +20,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);   // → /api/auth/register, /api/auth/login
-// app.use("/api/users", userRoutes); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)
+app.use("/api/user", userRoutes); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)/
+app.use("api/courses", coursesRoutes);
+
 
 
 // Swagger setup

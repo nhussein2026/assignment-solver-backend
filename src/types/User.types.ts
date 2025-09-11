@@ -22,3 +22,31 @@ export interface RegisterDTO {
   phone: string;
   password: string;
 }
+
+
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+export interface JWTPayload {
+  userId: string;
+  email: string;
+  username: string;
+}
+
+// Optional: Response type for login success
+export interface LoginResponse {
+  msg: string;
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    username: string;
+    phone: string;
+    role: "student" | "admin";
+    isEmailVerified: boolean;
+    isPhoneVerified: boolean;
+  };
+}
