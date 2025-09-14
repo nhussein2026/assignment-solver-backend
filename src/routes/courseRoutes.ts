@@ -15,7 +15,7 @@ router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
 
 // Protected (admin/user)
-router.post("/", authenticated, createCourse);
+router.post("/add", authenticated, createCourse);
 router.put("/:id", authenticated, updateCourse);
 router.delete("/:id", authenticated, deleteCourse);
 
