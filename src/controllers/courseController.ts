@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Course from "../models/Course";
-import Assignment from "../models/Assignment";
+import Assignment from "../models/Task";
 
 // Create a course
 export const createCourse = async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ export const createCourse = async (req: Request, res: Response) => {
 export const getAllCourses = async (_req: Request, res: Response) => {
   try {
     const courses = await Course.find()
-      .populate("assignments")
+      .populate("tasks")
       .populate("createdBy", "name email"); // optional populate
     res.status(200).json({ success: true, courses });
   } catch (error) {
@@ -52,7 +52,7 @@ export const getCourseById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const course = await Course.findById(id)
-      .populate("assignments")
+      .populate("tasks")
       .populate("createdBy", "name email");
     if (!course) {
       return res.status(404).json({ success: false, message: "Course not found" });

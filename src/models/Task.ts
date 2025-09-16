@@ -1,7 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { IAssignment } from "../types/Assignment.types";
+import { ITask } from "../types/Task.types";
 
-const assignmentSchema: Schema<IAssignment> = new Schema(
+const taskSchema: Schema<ITask> = new Schema(
   {
      studentName: {
       type: String,
@@ -64,9 +64,9 @@ const assignmentSchema: Schema<IAssignment> = new Schema(
   { timestamps: true }
 );
 
-const Assignment: Model<IAssignment> = mongoose.model<IAssignment>(
-  "Assignment",
-  assignmentSchema
+const Task: Model<ITask> = mongoose.model<ITask>(
+  "Task",
+  taskSchema
 );
 
-export default Assignment;
+export default Task;

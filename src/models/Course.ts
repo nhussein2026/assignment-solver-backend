@@ -21,10 +21,10 @@ const courseSchema: Schema<ICourse> = new Schema(
       type: Boolean,
       default: false, // marks user-created course not in admin list
     },
-    assignments: [
+    tasks: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Assignment",
+        ref: "Task",
       },
     ],
   },

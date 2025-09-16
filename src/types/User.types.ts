@@ -14,6 +14,10 @@ export interface IUser extends Document {
   isPhoneVerified: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  lastLogin?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+  profilePic?: string;
 }
 
 export interface RegisterDTO {

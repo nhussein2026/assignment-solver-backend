@@ -6,7 +6,7 @@ import {
   updateCourse,
   deleteCourse,
 } from "../controllers/courseController";
-import authenticated from "../middleware/authMiddleware"; 
+import authenticated from "../middleware/isAuthenticated"; 
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export interface IAssignment {
+export interface ITask {
   _id?: Types.ObjectId;
   studentName: string;
   studentId: string;

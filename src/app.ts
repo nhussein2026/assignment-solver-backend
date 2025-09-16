@@ -9,7 +9,7 @@ import YAML from 'yamljs';
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import coursesRoutes from "./routes/courseRoutes";
-import assignmentRoutes from "./routes/assignmentRoutes"
+import taskRoutes from "./routes/taskRoutes"
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);   // → /api/auth/register, /api/auth/login
 app.use("/api/user", userRoutes); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)/
 app.use("/api/courses", coursesRoutes);
-app.use("/api/task", assignmentRoutes);
+app.use("/api/tasks", taskRoutes);
 
 
 

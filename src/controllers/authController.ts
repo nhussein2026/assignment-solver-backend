@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import mongoose from 'mongoose';
 import User from "../models/User";
 import { RegisterDTO, LoginDTO, JWTPayload, IUser  } from "../types/User.types";
 import { comparePassword, hashPassword } from "../utils/password";
 import jwt from 'jsonwebtoken';
+import crypto from "crypto"; 
 
 // simple slugify for username
 const slugify = (s: string) =>
@@ -201,6 +201,81 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (err: any) {
     console.error("Error in logout controller:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+// 1️⃣ Forgot password — request reset
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ msg: "Email is required" });
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don’t leak info; respond same message
+      return res.status(200).json({ msg: "If that email exists, a reset link was sent" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Hash token before storing (so DB doesn’t store plain token)
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    // Set on user with expiry (15 min)
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    // Send link to email (pseudo code — use nodemailer or similar)
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    // TODO: implement actual email sending
+    console.log("Password reset link:", resetLink);
+
+    res.status(200).json({ msg: "Password reset link sent if email exists" });
+  } catch (err: any) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// 2️⃣ Reset password — user submits new password + token
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, email, newPassword } = req.body;
+    if (!token || !email || !newPassword) {
+      return res.status(400).json({ msg: "Token, email, and new password are required" });
+    }
+
+    // Hash token to compare with DB
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() }, // not expired
+    });
+
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid or expired token" });
+    }
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({ msg: "Password reset successful" });
+  } catch (err: any) {
+    console.error("Reset password error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };

@@ -6,7 +6,7 @@ export interface ICourse {
   pic?: string;
   createdBy: Types.ObjectId; // admin user
   isOther?: boolean;
-  assignments?: Types.ObjectId[]; // references Assignment
+  tasks?: Types.ObjectId[]; // references Assignment
   createdAt?: Date;
   updatedAt?: Date;
 }

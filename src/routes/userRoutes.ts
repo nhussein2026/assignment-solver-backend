@@ -7,7 +7,7 @@ import {
   deleteUser,
   getMyProfile,
 } from "../controllers/userController";
-import authenticated from "../middleware/authMiddleware";
+import authenticated from "../middleware/isAuthenticated";
 
 const router = Router();
 

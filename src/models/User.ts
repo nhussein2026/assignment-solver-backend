@@ -62,6 +62,16 @@ const userSchema: Schema<IUser> = new Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
+    profilePic: {
+      type: String, // URL or path to profile picture
+      default: "",
+    }
   },
   { timestamps: true }
 );
