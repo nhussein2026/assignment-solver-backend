@@ -9,7 +9,7 @@ export interface IUser extends Document {
   referralCode?: string;
   referredBy?: string | mongoose.Types.ObjectId | null;
   subjects: mongoose.Types.ObjectId[];
-  role: "student" | "admin";
+  role: "admin" | "user" | "manager"| "tutor" | "programmer" | "Assistant";
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
   createdAt?: Date;

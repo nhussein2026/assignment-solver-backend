@@ -2,9 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { IUser } from "../types/User.types";
 
+
 export interface AuthenticatedRequest extends Express.Request {
-  user?: IUser | string; 
-} 
+  user?: JwtPayload;
+}
+
 
 // Define the shape of the JWT payload
 interface JwtPayload {
