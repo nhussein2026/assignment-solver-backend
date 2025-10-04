@@ -9,16 +9,25 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const yamljs_1 = __importDefault(require("yamljs"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
+const taskRoutes_1 = __importDefault(require("./routes/taskRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Routes
+app.use("/api/auth", authRoutes_1.default); // → /api/auth/register, /api/auth/login
+app.use("/api/user", userRoutes_1.default); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)/
+app.use("/api/courses", courseRoutes_1.default);
+app.use("/api/tasks", taskRoutes_1.default);
 // Swagger setup
 const swaggerDocument = yamljs_1.default.load('./swagger.yaml');
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
 // Landing page route
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     const html = `
   <!DOCTYPE html>
   <html lang="en">
