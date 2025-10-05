@@ -1,14 +1,10 @@
 import { IUser } from "./User.types";
-
-interface JwtPayload {
-  id: string;
-  role: string;
-}
+import { JwtPayload } from "../types/auth";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser | string | JwtPayload;
+      user?: JwtPayload;
     }
   }
 }

@@ -1,39 +1,65 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { JwtPayload } from "../types/auth";
 
-export interface AuthenticatedRequest extends Express.Request {
+// Extend Express Request to include user property
+export interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
 
-// Define the shape of the JWT payload
-interface JwtPayload {
-  id: string;
-  role: string;
+// Validate environment variable at startup
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
 }
 
-// JWT secret should be in env variables
-const JWT_SECRET = process.env.JWT_SECRET;
-
 // Middleware to authenticate JWT token
-const authenticated = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res
-      .status(401)
-      .json({ message: "Authorization header missing or malformed" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
+const isAuthenticated = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      res.status(401).json({ message: "Authorization header missing" });
+      return;
+    }
+
+    if (!authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Authorization header malformed" });
+      return;
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      res.status(401).json({ message: "Token missing" });
+      return;
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     req.user = decoded;
     next();
   } catch (err) {
-    console.error("JWT error:", err); // optional logging
-    res.status(401).json({ message: "Token is not valid" });
+    // Log error for server-side monitoring
+    console.error("JWT verification error:", err);
+
+    // Don't expose specific error details in production
+    if (process.env.NODE_ENV === "production") {
+      res.status(401).json({ message: "Authentication failed" });
+    } else {
+      // More detailed error in development
+      if (err instanceof jwt.TokenExpiredError) {
+        res.status(401).json({ message: "Token expired" });
+      } else if (err instanceof jwt.JsonWebTokenError) {
+        res.status(401).json({ message: "Invalid token" });
+      } else {
+        res.status(401).json({ message: "Authentication failed" });
+      }
+    }
   }
 };
 
-export default authenticated;
+export default isAuthenticated;

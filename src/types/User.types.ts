@@ -8,10 +8,10 @@ export interface IUser extends Document {
   password: string;
   referralCode?: string;
   referredBy?: string | mongoose.Types.ObjectId | null;
-  subjects: mongoose.Types.ObjectId[];
-  role: "admin" | "user" | "manager"| "tutor" | "programmer" | "Assistant";
-  isEmailVerified: boolean;
-  isPhoneVerified: boolean;
+  subjects?: mongoose.Types.ObjectId[];
+  role: "admin" | "user" | "manager" | "tutor" | "programmer" | "Assistant";
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   lastLogin?: Date;
@@ -26,7 +26,6 @@ export interface RegisterDTO {
   phone: string;
   password: string;
 }
-
 
 export interface LoginDTO {
   email: string;
@@ -49,7 +48,7 @@ export interface LoginResponse {
     email: string;
     username: string;
     phone: string;
-    role: "student" | "admin";
+    role: "admin" | "user" | "manager" | "tutor" | "programmer" | "Assistant";
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
   };

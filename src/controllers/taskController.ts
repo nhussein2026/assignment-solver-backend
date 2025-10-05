@@ -19,9 +19,11 @@ export const createTask = async (req: Request, res: Response) => {
     } = req.body;
 
     // your authenticated middleware sets req.user
-    const createdBy = req.user.userId || req.user.id || req.user._id;
+    const createdBy = req?.user?.id;
     if (!createdBy) {
-      return res.status(401).json({ success: false, message: "Not authenticated" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
     }
 
     const task = new Task({
@@ -61,7 +63,10 @@ export const getTaskById = async (req: Request, res: Response) => {
     const task = await Task.findById(req.params.id)
       .populate("course")
       .populate("createdBy");
-    if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+    if (!task)
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
     res.status(200).json({ success: true, task });
   } catch (error) {
     res.status(500).json({ success: false, message: (error as Error).message });
@@ -71,8 +76,13 @@ export const getTaskById = async (req: Request, res: Response) => {
 // Update Task
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!task)
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
     res.status(200).json({ success: true, task });
   } catch (error) {
     res.status(500).json({ success: false, message: (error as Error).message });
@@ -83,7 +93,10 @@ export const updateTask = async (req: Request, res: Response) => {
 export const deleteTask = async (req: Request, res: Response) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
-    if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+    if (!task)
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
     res.status(200).json({ success: true, message: "Task deleted" });
   } catch (error) {
     res.status(500).json({ success: false, message: (error as Error).message });

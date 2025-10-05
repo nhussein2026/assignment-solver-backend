@@ -6,7 +6,7 @@ import {
   updateCourse,
   deleteCourse,
 } from "../controllers/courseController";
-import authenticated from "../middleware/isAuthenticated"; 
+import isAuthenticated from "../middleware/isAuthenticated";
 
 const router = Router();
 
@@ -15,8 +15,8 @@ router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
 
 // Protected (admin/user)
-router.post("/add", authenticated, createCourse);
-router.put("/:id", authenticated, updateCourse);
-router.delete("/:id", authenticated, deleteCourse);
+router.post("/add", isAuthenticated, createCourse);
+router.put("/:id", isAuthenticated, updateCourse);
+router.delete("/:id", isAuthenticated, deleteCourse);
 
 export default router;
