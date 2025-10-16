@@ -19,7 +19,6 @@ const userSchema: Schema<IUser> = new Schema(
       type: String,
       required: true,
       match: [/^(\+974\s?)?[3-7]\d{3}\s?\d{4}$/, "Invalid Qatari phone number"],
-
     },
     username: {
       type: String,
@@ -41,12 +40,11 @@ const userSchema: Schema<IUser> = new Schema(
     referredBy: {
       type: Schema.Types.Mixed,
       default: null,
-      
     },
     subjects: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Subject",
+        ref: "Course",
       },
     ],
     role: {
@@ -71,9 +69,9 @@ const userSchema: Schema<IUser> = new Schema(
     profilePic: {
       type: String, // URL or path to profile picture
       default: "",
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);

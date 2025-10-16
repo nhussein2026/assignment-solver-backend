@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import User from "../models/User";
-import { RegisterDTO, LoginDTO, JWTPayload, IUser } from "../types/User.types";
+import { RegisterDTO, LoginDTO, IUser } from "../types/User.types";
 import { comparePassword, hashPassword } from "../utils/password";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { JwtPayload } from "../types/auth";
 
 // simple slugify for username
 const slugify = (s: string) =>
@@ -39,8 +40,6 @@ const generateUniqueUsername = async (
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  console.log("Register endpoint hit");
-  console.log("Request body:", req.body);
   try {
     const { name, email, phone, password } = req.body as RegisterDTO;
 
@@ -54,11 +53,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     // quick server-side validation (same rule as your schema)
     const qatRegex = /^(\+974\s?)?[3-7]\d{3}\s?\d{4}$/;
     if (!qatRegex.test(phone)) {
-      res
-        .status(400)
-        .json({
-          msg: "Invalid phone format. Expected Qatari number like +974 6000 1234 or 6000 1234",
-        });
+      res.status(400).json({
+        msg: "Invalid phone format. Expected Qatari number like +974 6000 1234 or 6000 1234",
+      });
       return;
     }
 
@@ -78,11 +75,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     // auto-generate a unique username to satisfy schema requirement
     const username = await generateUniqueUsername(name, email);
-    console.log("Generated username:", username);
 
     // hash password
     const hashedPassword = await hashPassword(password);
-    console.log("Hashed password:", hashedPassword);
     // create user (other fields use schema defaults)
     const user = await User.create({
       name,
@@ -91,7 +86,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       username,
       password: hashedPassword,
     });
-    console.log("User created:", user);
     // thanks to toJSON transform, password is not included
     res.status(201).json({
       msg: "User registered successfully",
@@ -103,13 +97,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (err?.code === 11000) {
       const key = Object.keys(err.keyValue ?? {})[0] ?? "field";
-      res
-        .status(409)
-        .json({
-          msg: `${key} must be unique`,
-          key,
-          value: err.keyValue?.[key],
-        });
+      res.status(409).json({
+        msg: `${key} must be unique`,
+        key,
+        value: err.keyValue?.[key],
+      });
       return;
     }
     res.status(500).json({ msg: "Server error" });
@@ -163,10 +155,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const payload: JWTPayload = {
-      userId: (user._id as mongoose.Types.ObjectId).toString(),
+    const payload: JwtPayload = {
+      id: (user._id as mongoose.Types.ObjectId).toString(),
       email: user.email,
       username: user.username,
+      role: user.role,
     };
 
     const token = jwt.sign(payload, JWT_SECRET, {

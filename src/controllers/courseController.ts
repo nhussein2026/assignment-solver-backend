@@ -4,21 +4,28 @@ import Assignment from "../models/Task";
 
 // Create a course
 export const createCourse = async (req: Request, res: Response) => {
-  console.log("Creating a new course", req.body);
+  console.log("Creating a new course", req);
 
   try {
     const { name, pic, isOther } = req.body;
 
     // your authenticated middleware sets req.user
-    const user = req.user as { userId?: string; id?: string; _id?: string; role?: string };
-
-    // accept userId or id or _id, whichever your middleware sets
-    const creatorId = user.userId || user.id || user._id;
-    if (!creatorId) {
-      return res.status(401).json({ success: false, message: "Not authenticated" });
+    const user = req.user;
+    console.log("user", req.user);
+    if (!user || !user.id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
     }
 
-    const createdBy = user.id || user._id || user.userId;
+    const creatorId = user.id;
+    if (!creatorId) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
+    }
+
+    const createdBy = user.id;
 
     const course = new Course({
       name,
@@ -55,7 +62,9 @@ export const getCourseById = async (req: Request, res: Response) => {
       .populate("tasks")
       .populate("createdBy", "name email");
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
     res.status(200).json({ success: true, course });
   } catch (error) {
@@ -74,7 +83,9 @@ export const updateCourse = async (req: Request, res: Response) => {
 
     const course = await Course.findByIdAndUpdate(id, updates, { new: true });
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
 
     res.status(200).json({ success: true, course });
@@ -89,7 +100,9 @@ export const deleteCourse = async (req: Request, res: Response) => {
     const { id } = req.params;
     const course = await Course.findByIdAndDelete(id);
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
 
     // optionally delete related assignments

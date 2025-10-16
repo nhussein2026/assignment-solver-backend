@@ -32,12 +32,6 @@ export interface LoginDTO {
   password: string;
 }
 
-export interface JWTPayload {
-  userId: string;
-  email: string;
-  username: string;
-}
-
 // Optional: Response type for login success
 export interface LoginResponse {
   msg: string;

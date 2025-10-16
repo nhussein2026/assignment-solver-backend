@@ -3,7 +3,7 @@ import { ITask } from "../types/Task.types";
 
 const taskSchema: Schema<ITask> = new Schema(
   {
-     studentName: {
+    studentName: {
       type: String,
       required: true,
       trim: true,
@@ -43,8 +43,8 @@ const taskSchema: Schema<ITask> = new Schema(
     },
     status: {
       type: String,
-      enum: ["in_progress", "achieved", "pending", "overdue"],
-      default: "in_progress",
+      enum: ["قيد التنفيذ", "تم الإنجاز", "قيد الانتظار", "متأخر"],
+      default: "قيد التنفيذ",
     },
     attachments: [
       {
@@ -61,12 +61,9 @@ const taskSchema: Schema<ITask> = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Task: Model<ITask> = mongoose.model<ITask>(
-  "Task",
-  taskSchema
-);
+const Task: Model<ITask> = mongoose.model<ITask>("Task", taskSchema);
 
 export default Task;

@@ -13,6 +13,7 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
 const taskRoutes_1 = __importDefault(require("./routes/taskRoutes"));
+const dashboardRoutes_1 = __importDefault(require("./routes/dashboardRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
@@ -20,21 +21,22 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 // Routes
 app.use("/api/auth", authRoutes_1.default); // → /api/auth/register, /api/auth/login
-app.use("/api/user", userRoutes_1.default); // → /api/users/me, /api/users/referrals, /api/users/me (PUT)/
+app.use("/api/users", userRoutes_1.default);
 app.use("/api/courses", courseRoutes_1.default);
 app.use("/api/tasks", taskRoutes_1.default);
+app.use("/api/dashboard", dashboardRoutes_1.default);
 // Swagger setup
-const swaggerDocument = yamljs_1.default.load('./swagger.yaml');
-app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
+const swaggerDocument = yamljs_1.default.load("./swagger.yaml");
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
 // Landing page route
-app.get('/api', (req, res) => {
+app.get("/api", (req, res) => {
     const html = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${process.env.APP_NAME || 'Assignment Solver'} API</title>
+    <title>${process.env.APP_NAME || "Assignment Solver"} API</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -56,7 +58,7 @@ app.get('/api', (req, res) => {
         <div class="flex justify-between h-16 items-center">
           <div class="flex-shrink-0 flex items-center">
             <i class="fas fa-laptop-code text-2xl text-indigo-600 mr-2"></i>
-            <span class="text-xl font-bold text-gray-800">${process.env.APP_NAME || 'Assignment Solver API'}</span>
+            <span class="text-xl font-bold text-gray-800">${process.env.APP_NAME || "Assignment Solver API"}</span>
           </div>
           <nav class="hidden md:flex space-x-8">
             <a href="#features" class="text-gray-500 hover:text-indigo-600">Features</a>
@@ -79,7 +81,7 @@ app.get('/api', (req, res) => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="md:flex items-center justify-between">
             <div class="md:w-1/2 mb-10 md:mb-0">
-              <h1 class="text-4xl md:text-5xl font-bold mb-4">${process.env.APP_NAME || 'Assignment Solver'} API</h1>
+              <h1 class="text-4xl md:text-5xl font-bold mb-4">${process.env.APP_NAME || "Assignment Solver"} API</h1>
               <p class="text-xl mb-6 text-indigo-100">A powerful backend solution for educational applications</p>
               <div class="flex space-x-4">
                 <a href="/api-docs" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-indigo-50 transition duration-300">
@@ -158,11 +160,11 @@ app.get('/api', (req, res) => {
                 <p class="mb-4 text-gray-600">To use the Assignment Solver API, you'll need an API key for authentication. Contact support to get your access credentials.</p>
                 <div class="mb-6">
                   <h4 class="font-bold mb-2">Base URL</h4>
-                  <code class="bg-gray-100 p-2 rounded text-sm block">${req.protocol}://${req.get('host')}/api/v1</code>
+                  <code class="bg-gray-100 p-2 rounded text-sm block">${req.protocol}://${req.get("host")}/api/v1</code>
                 </div>
                 <div class="mb-6">
                   <h4 class="font-bold mb-2">Example Request</h4>
-                  <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">fetch('${req.protocol}://${req.get('host')}/api/v1/problems', {
+                  <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">fetch('${req.protocol}://${req.get("host")}/api/v1/problems', {
   method: 'GET',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -299,7 +301,7 @@ app.get('/api', (req, res) => {
           <div class="mb-6 md:mb-0">
             <div class="flex items-center mb-4">
               <i class="fas fa-laptop-code text-2xl text-indigo-400 mr-2"></i>
-              <span class="text-xl font-bold">${process.env.APP_NAME || 'Assignment Solver API'}</span>
+              <span class="text-xl font-bold">${process.env.APP_NAME || "Assignment Solver API"}</span>
             </div>
             <p class="text-gray-400 max-w-md">A powerful backend solution for educational applications, built with modern technologies.</p>
           </div>
@@ -314,7 +316,7 @@ app.get('/api', (req, res) => {
           </div>
         </div>
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>© ${new Date().getFullYear()} ${process.env.APP_NAME || 'Assignment Solver API'}. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} ${process.env.APP_NAME || "Assignment Solver API"}. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -368,12 +370,12 @@ app.get('/api', (req, res) => {
     res.send(html);
 });
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get("/api/health", (req, res) => {
     res.json({
-        status: 'ok',
-        message: 'API is healthy',
+        status: "ok",
+        message: "API is healthy",
         timestamp: new Date().toISOString(),
-        uptime: process.uptime()
+        uptime: process.uptime(),
     });
 });
 exports.default = app;

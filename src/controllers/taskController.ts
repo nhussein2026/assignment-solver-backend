@@ -3,7 +3,8 @@ import Task from "../models/Task";
 
 // Create a Task
 export const createTask = async (req: Request, res: Response) => {
-  console.log("Request body to create task:", req.body); // Debugging line
+  // console.log("Request body to create task:", req.body); // Debugging line
+  console.log("user is: ", req.user); // Debugging line to check authenticated user
   try {
     const {
       studentName,
@@ -18,8 +19,10 @@ export const createTask = async (req: Request, res: Response) => {
       additionalInfo,
     } = req.body;
 
+    console.log("Creating task for student:", req.user); // Debugging line
     // your authenticated middleware sets req.user
     const createdBy = req?.user?.id;
+    console.log("Authenticated user ID:", createdBy); // Debugging line
     if (!createdBy) {
       return res
         .status(401)
